@@ -1,0 +1,226 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>Map Search</title>
+  <!-- Grid960 -->
+  <link rel="stylesheet" type="text/css" href="css/960_12_col.css">
+  <!-- jQuery -->
+  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <!-- Include Google Maps API (Google Maps API v3 已不需使用 API Key) -->
+  <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+  <!-- Marker clusterer -->
+  <script src="js/markerclusterer.js"></script>
+  <!-- tinyMap -->
+  <script src="js/jquery.tinyMap.min.js"></script>
+  <!-- tmp css -->
+  <link rel="stylesheet" type="text/css" href="css/tmp.css">
+</head>
+<body>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">失物招領</a>
+      </div>
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="normalSearch.html">Normal Search</a></li>
+        <li class="active"><a href="mapSearch.html">Map Search</a></li>
+      </ul>
+      </div>
+    </div>
+  </nav>
+  <section id="searchBox" class="container_12">
+    <div class="grid_6">
+      位置：
+      <input id="address" size="40"></input>
+    </div>
+    <div class="grid_2">
+      <button type="button" class="btn btn-primary" id="go">GO!</button>
+    </div>
+    <div class="grid_2">
+      <button type="button" class="btn btn-primary" id="mark">Mark</button>
+    </div>
+    <div class="grid_2">
+      <button type="button" class="btn btn-primary" id="mark">規劃路線</button>
+    </div>
+  </section>
+  <section class="container_12">   
+    <div id="map" class="grid_12" style="height:400px"></div>
+  </section>
+  <section class="container_12">
+    <div class="grid_12">
+      <table align="center" class="table">
+        <tr align="center" valign="middle">
+          <td><a href="#">編號</a></td>
+          <td><a href="#">日期</a></td>
+          <td><a href="#">地點</a></td>
+          <td><a href="#">物品名稱</a></td>
+          <td><a href="#">物品描述</a></td>
+          <td><a href="#">保管地點</a></td>
+        </tr>
+        <tr align="center" valign="middle">
+          <td>00000001</td>
+          <td>2014/01/01</td>
+          <td>台北市政治大學校門口</td>
+          <td><a href="lostitem.html" target="_blank">手機</a></td>
+          <td>iPhone5s 黑色</td>
+          <td><a data-toggle="modal" data-target="#myModal">文山一分局</a></td>
+        </tr>
+        <tr align="center" valign="middle">
+          <td>00000002</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr align="center" valign="middle">
+          <td>00000003</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr align="center" valign="middle">
+          <td>00000004</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr align="center" valign="middle">
+          <td>00000005</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr align="center" valign="middle">
+          <td>00000006</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr align="center" valign="middle">
+          <td>00000007</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr align="center" valign="middle">
+          <td>00000008</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr align="center" valign="middle">
+          <td>00000009</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr align="center" valign="middle">
+          <td>00000010</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+      </table>
+    </div>
+  </section>
+  <section class="container_12">
+    <div class="grid_12" align="center">
+      <ul class="pagination">
+        <li><a href="#">&laquo;</a></li>
+        <li><a href="#">1</a></li>
+        <li><a href="#">2</a></li>
+        <li><a href="#">3</a></li>
+        <li><a href="#">4</a></li>
+        <li><a href="#">5</a></li>
+        <li><a href="#">&raquo;</a></li>
+      </ul>
+    </div>
+  </section>
+  <footer>
+    <div class="container_12">
+      <div class="grid_1 push_3">
+        <img src="images/nccu.png" style="display:inline-block;width:100%;">
+      </div>
+      <div class="grid_4 push_3">
+        <p>National Chengchi University</p>
+        <p>Web Programming Project</p>
+      </div>
+    </div>    
+  </footer>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+        <iframe src="pd.html" style="width:100%;height:550px;margin:5px auto;border:0px;"></iframe>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    $('#map').tinyMap({
+      center: "臺北市文山區指南路二段64號",
+      zoom: 10,
+      mapTypeControl: false, //地圖類型切換
+      streetViewControl: false, //街景控制器
+      zoomControl: false, //縮放控制器
+      scaleControl: false, //比例尺
+      markerCluster: true //啟用marker分組
+    });
+    $(function(){                   
+          $("#go").click(function(){
+        $('#map').tinyMap('panto', $('#address').val());
+        $('#map').tinyMap('modify', {zoom:16});
+          });
+          $("#mark").click(function(){
+        $('#map').tinyMap('modify',{marker:[
+          {addr: "台灣指南路二段64號",
+            text: "Iphone手機1.00個",
+            label: "手機",
+            event: function(){
+               window.open("lostitem.html","_blank");
+            }},
+            {addr: "台北市指南路二段18號",
+            text: "新台幣若干元",
+            label: "現金"},
+            {addr: "台北市指南路二段12號",
+            text: "卡西歐手錶1.00只",
+            label: "手錶"},
+            {addr: "台北市指南路二段28號",
+            text: "餅乾1.00盒",
+            label: "其他"},
+            {addr: "台北市指南路二段32號",
+            text: "美金1500.00元",
+            label: "現金"}
+            ]});
+          });
+        });
+  </script>
+</body>
+</html>
