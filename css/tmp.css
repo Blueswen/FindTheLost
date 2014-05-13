@@ -1,0 +1,25 @@
+body{
+	font-family:"微軟正黑體","Microsoft JhengHei","Helvetica Neue",Helvetica,Arial,sans-serif;
+	background-color: #eee;
+	padding-top: 70px;
+}
+
+section{
+	margin-top:20px;
+}
+
+footer {
+	width: 90%;
+	text-align: center;
+	margin: 50px auto;
+	padding-top: 10px;
+	border-top: 1px gray solid;
+}
+
+footer p {
+	margin-top: 7px;
+}
+
+footer img {
+	margin-top: 7px;
+}
