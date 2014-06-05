@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<script type="text/javascript"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+	<script type="text/javascript" src="js/jquery.tinyMap.min.js"></script>
+	<!-- google jsapi -->
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=true_or_false"></script>
+	<script type="text/javascript">
+	/*
+	navigator.geolocation.getCurrentPosition(GetLocation);
+	function GetLocation(location) {
+    alert(location.coords.latitude);
+    alert(location.coords.longitude);
+    alert(location.coords.accuracy);
+	}
+	*/
+	</script>
+</head>
+<body>
+	<button onclick="mark()">標記離我最近的警局</button>
+	<div id="map" style="height:500px;width:960px"></div>
+	<div id="map1" style="display:none;"></div>
+	<script type="text/javascript">
+		var myplace;
+		$(function(){
+			$('#map').tinyMap({
+				mapTypeControl: false, //地圖類型切換
+				streetViewControl: false, //街景控制器
+				zoomControl: false, //縮放控制器
+				scaleControl: false, //比例尺
+				markerCluster: true //啟用marker分組
+			});
+		});
+		function mark(){
+			var pyrmont = new google.maps.LatLng(myplace.coords.latitude,myplace.coords.longitude);;
+
+		  map = new google.maps.Map(document.getElementById('map1'), {
+		      mapTypeId: google.maps.MapTypeId.ROADMAP,
+		      center: pyrmont,
+		      zoom: 15
+	    });
+
+		  var request = {
+		    location: pyrmont,
+		    radius: '3000',
+		    types: ['police']
+		  };
+
+		  service = new google.maps.places.PlacesService(map);
+		  service.search(request, callback);
+			
+
+			function callback(results, status) {
+			  if (status == google.maps.places.PlacesServiceStatus.OK) {
+			  	console.log(results);
+			  	for (var i = 0; i < results.length; i++) {
+			      $('#map').tinyMap('modify',{marker:[
+		         {addr: results[i].vicinity}
+		         ]
+		        });
+			    }
+			  }
+			}
+		}
+		navigator.geolocation.getCurrentPosition(position);
+		function position(location){
+			myplace = location;
+			$('#map').tinyMap('panto', { x : (location.coords.latitude) , y : (location.coords.longitude) });
+			$('#map').tinyMap('modify', {zoom:16});
+		}
+	</script>
+</body>
+</html>
