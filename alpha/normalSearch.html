@@ -3,12 +3,14 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>Normal Search</title>
-  <!-- Grid960 -->
-  <link rel="stylesheet" type="text/css" href="css/960_12_col.css">
+  <link rel="stylesheet" type="text/css" href="css/reset.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/text.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/960.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/Normal_Search.css" /> 
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
   <!-- jQuery -->
   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-  <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
   <!-- Latest compiled and minified JavaScript -->
   <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
   <!-- tmp css -->
@@ -36,23 +38,25 @@
     }
   </script-->
 </head>
-<body>
-  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container-fluid">
-      <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header">
-     <a class="navbar-brand" href="index.html">失物招領</a>
+<body class="container_12">
+  <nav id="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container_12">
+	<div id="nav_item">
+	  <span><a href="index.html">首頁</a></span>&nbsp;&nbsp;&nbsp;&nbsp;
+	  <span id="present"><a href="#">一般搜尋</a> </span>&nbsp;&nbsp;&nbsp;&nbsp;
+	  <span><a href="mapSearch.html">地圖搜尋</a> </span>&nbsp;&nbsp;&nbsp;&nbsp;
+    <span><a href="staff.html">工作人員</a> </span>
+	</div>
+	  
+	  <div id="logo"> <a href=""> <img src="https://db.tt/MiJVRKZE" width=250></a>
+      </div>	
       </div>
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="normalSearch.html">Normal Search</a></li>
-        <li><a href="mapSearch.html">Map Search</a></li>
-        <li><a href="staff.html">staff</a></li>
-      </ul>
-      </div>
-    </div>
   </nav>
-  <section class="container_12">
+ 
+<article> 
+<div id="wrapper" class="container_12">
+
+  <section id="section_1" class="container_12">
     <div class="grid_4">
       <ul>
         <li><a href="#">手機</a></li>
@@ -88,36 +92,49 @@
       </ul>
     </div>
   </section>
-  <section class="container_12">
+  
+  <div class="grid_12"></div>
+
+  
+  <section id="section_2" class="container_12">
+
     <div class="grid_4">
       <label for="triggerWords">失物關鍵字:</label>
-      <input type="text" class="searchInput" name="x" size="21" maxlength="120" />
+      <input type="text" class="searchInput" name="x" size="25" maxlength="120" />
     </div>
     <div class="grid_4">
       <label for="lostTime">遺失時間 :</label>
-      <input type="date" class="searchInput" name="x" size="21" maxlength="120" />
+      <input type="date" class="searchInput" name="x" size="25" maxlength="120" />
     </div>
     <div class="grid_4">
       <label for="lostPosition"> 遺失地點:</label>
-      <input type="text" class="searchInput" name="x" size="21" maxlength="120" />
+      <input type="text" class="searchInput" name="x" size="25" maxlength="120" />
     </div>
   </section>
-  <section class="container_12">
-    <div class="gird_12" align="center">
-      <input type="submit" value="SEARCH" type="button" class="btn btn-primary" />
+ 
+  <div class="grid_12"></div>
+  <div class="clear"></div>
+  
+  <section>
+    <div align="center">
+      <input type="submit" value="搜尋" type="button" id="button">
     </div>
+	
   </section>
-
-  <section class="container_12">
-    <div class="grid_12">
-      <table align="center" class="table">
-        <tr align="center" valign="middle">
-          <td><a href="#">編號</a></td>
-          <td><a href="#">日期</a></td>
-          <td><a href="#">地點</a></td>
-          <td><a href="#">物品名稱</a></td>
-          <td><a href="#">物品描述</a></td>
-          <td><a href="#">保管地點</a></td>
+  
+   <div class="grid_12"></div>
+  
+<div class="clear"></div>
+<section>
+    
+      <table align="center" class="table" cellspacing="5" cellpadding="6">
+        <tr id="title_table" align="center" valign="middle" >
+          <td>編號</a></td>
+          <td>日期</a></td>
+          <td>地點</a></td>
+          <td>物品名稱</a></td>
+          <td>物品描述</a></td>
+          <td>保管地點</a></td>
         </tr>
         <tr align="center" valign="middle">
           <td>00000001</td>
@@ -200,10 +217,10 @@
           <td>&nbsp;</td>
         </tr>
       </table>
-    </div>
-  </section>
-  <section class="container_12">
-    <div class="grid_12" align="center">
+    </section>
+  
+<section class="container_12">
+    <div class="grid_12  push_1" align="center">
       <ul class="pagination">
         <li><a href="#">&laquo;</a></li>
         <li><a href="#">1</a></li>
@@ -215,12 +232,12 @@
       </ul>
     </div>
   </section>
+  
+ </div>
+</article>   
+  
   <footer>
     <div class="container_12">
-      <div class="grid_1 push_3">
-        <img src="images/nccu.png" style="display:inline-block;width:100%;">
-      </div>
-      <div class="grid_4 push_3">
         <p>National Chengchi University</p>
         <p>Web Programming Project</p>
       </div>
