@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>失物招領</title>
+	<!-- Grid960 -->
+  <link rel="stylesheet" type="text/css" href="css/960_12_col.css">
+  <!-- jQuery -->
+  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <!-- Include Google Maps API (Google Maps API v3 已不需使用 API Key) -->
+  <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+  <!-- Marker clusterer -->
+  <script src="js/markerclusterer.js"></script>
+  <!-- tinyMap -->
+  <script src="js/jquery.tinyMap.min.js"></script>
+  <!-- Parse -->
+  <script src="https://www.parsecdn.com/js/parse-1.2.18.min.js"></script>
+  <!-- doT.js -->
+  <script type="text/javascript" src="js/doT.min.js"></script>
+  <!-- Mycss.css -->
+  <link rel="stylesheet" type="text/css" href="css/mycss.css">
+</head>
+<body>
+	<nav id="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container_12">
+    	<div id="nav_item">
+    	  <span><a href="index.html">首頁</a></span>
+    	  <span><a href="normalSearch.html">一般搜尋</a> </span>
+    	  <span><a href="mapSearch.html">地圖搜尋</a> </span>
+    	  <span id="present"><a href="pick.html">撿到東西</a> </span>
+        <span><a href="staff.html">團隊成員</a> </span>
+    	</div>
+      <div id="logo">
+          <img src="images/logo.png" height="60px">
+      </div>
+    </div>
+  </nav>
+
+	<article > 
+		<div id="wrapper" class="container_12">
+			<section>
+				<div class="grid_12">
+					<button id="button_pick" onclick="mark()">標記離我最近的警局</button>
+				</div>
+				<div class="clear"></div>
+				<div id="map" style="height:500px;width:980px;margin-bottom:20px;" class="grid_12"></div>
+				<div id="map1" style="display:none;"></div>
+			</section>
+		</div>
+	</article>
+  <footer>
+    <div class="container_12">
+        <p>National Chengchi University</p>
+        <p>Web Programming Project</p>
+      </div>
+    </div>    
+  </footer>
+	<script type="text/javascript">
+		var myplace;
+		$(function(){
+			$('#map').tinyMap({
+				mapTypeControl: false, //地圖類型切換
+				streetViewControl: false, //街景控制器
+				zoomControl: false, //縮放控制器
+				scaleControl: false, //比例尺
+				markerCluster: true //啟用marker分組
+			});
+		});
+		function mark(){
+			var pyrmont = new google.maps.LatLng(myplace.coords.latitude,myplace.coords.longitude);;
+
+		  map = new google.maps.Map(document.getElementById('map1'), {
+		      mapTypeId: google.maps.MapTypeId.ROADMAP,
+		      center: pyrmont,
+		      zoom: 15
+	    });
+
+		  var request = {
+		    location: pyrmont,
+		    radius: '3000',
+		    types: ['police']
+		  };
+
+		  service = new google.maps.places.PlacesService(map);
+		  service.search(request, callback);
+			
+
+			function callback(results, status) {
+			  if (status == google.maps.places.PlacesServiceStatus.OK) {
+			  	console.log(results);
+			  	for (var i = 0; i < results.length; i++) {
+			      $('#map').tinyMap('modify',{marker:[
+		         {addr: results[i].vicinity}
+		         ]
+		        });
+			    }
+			  }
+			}
+		}
+		navigator.geolocation.getCurrentPosition(position);
+		function position(location){
+			myplace = location;
+			$('#map').tinyMap('panto', { x : (location.coords.latitude) , y : (location.coords.longitude) });
+			$('#map').tinyMap('modify', {zoom:16});
+		}
+	</script>
+</body>
+</html>

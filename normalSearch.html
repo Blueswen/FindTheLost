@@ -1,0 +1,302 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>失物招領 - 一般搜尋</title>
+  <!-- Grid960 -->
+  <link rel="stylesheet" type="text/css" href="css/960_12_col.css">
+  <!-- jQuery -->
+  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <!-- Include Google Maps API (Google Maps API v3 已不需使用 API Key) -->
+  <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+  <!-- Marker clusterer -->
+  <script src="js/markerclusterer.js"></script>
+  <!-- tinyMap -->
+  <script src="js/jquery.tinyMap.min.js"></script>
+  <!-- Parse -->
+  <script src="https://www.parsecdn.com/js/parse-1.2.18.min.js"></script>
+  <!-- doT.js -->
+  <script type="text/javascript" src="js/doT.min.js"></script>
+  <!-- Mycss.css -->
+  <link rel="stylesheet" type="text/css" href="css/mycss.css">
+
+  <script type="text/javascript" src="js/jquery.wheelmenu.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link href='css/elusive-webfont.css' rel='stylesheet' type='text/css'>
+
+
+  <script id="listTemp" type="text/x-dot-template">
+    <tr>
+      <td>
+        {{=it.get('time')}}
+      </td>
+      <td>
+        {{=it.get('location')}}
+      </td>
+      <td>
+        {{=it.get('info')}}
+      </td>
+      <td>
+        <a href="#" dep={{=it.get('name')}} onclick="police(this)" data-toggle="modal" data-target="#myModal">
+          {{=it.get('name')}}
+        </a>
+      </td>
+    </tr>
+  </script>
+  <script id="policeTemp" type="text/x-dot-template">
+    <div class="section_left">
+        <h1>{{=it.get('unit')}}</h1>
+      <ul>
+        <li>電話：{{=it.get('phone')}}</li>
+        <li>地址：{{=it.get('address')}}</li>
+      </ul>
+    </div>
+    <div class="section_right">
+      <div id="map" style="height:400px;width:598px;"></div>
+    </div>
+  </script>
+  <script type="text/javascript">
+    Parse.initialize("siqvdO6RZKE0kdv3YbIuNtbAbiorfT8vk3LCAM1N", "BgPVg2ZigIrxIJyBgx43E4fjUeSswZKm3si56WVS");
+    
+    var items=[];
+    var currentpage = 1;
+    var totalpage = 1;
+
+    function search(){
+      if($('#sdate').val()==""){
+        alert("請選擇日期")
+        return false;
+      }
+      items=[];
+      $('#page').append("<img id='loading' src='images/loading.gif'>");
+      var r = $('#sdate').val();
+      r = r.replace(/\-/g,"/");
+      var miss = Parse.Object.extend("miss");//include class
+      var query = new Parse.Query(miss);//對class做搜尋
+      //query.equalTo("time", r);
+      var ans = 0;
+      query.greaterThanOrEqualTo("time", r);
+      var printList = doT.template($('#listTemp').text());
+      query.limit(1000); 
+      query.ascending("time");
+      query.find({
+        success: function(results) {
+          $('#loading').remove();
+          for (var i = 0; i < results.length-2; i++) { 
+            var object =results[i];
+            var mtime =object.get('time');
+            var mloc =object.get('location');
+            var minfo =object.get('info');
+            if(mtime==undefined||mloc==undefined||minfo==undefined)
+              continue;
+            if((parseInt((mtime.split("/"))[2],10))<=(parseInt((r.split("/"))[2],10)+7)){
+              if(mloc.search($('#sloc').val())!=-1 && minfo.search($('#sname').val())!=-1){
+                items.push(object);
+              }
+            }
+          }
+          
+          totalpage = Math.ceil(items.length/50);
+          $('#page').html("");
+          for (var i=1 ; i<=totalpage ; i++){
+            $('#page').append("<li><a page=" + i + " onclick='pageclick(this)'>" + i + "</a></li>");
+          }
+          turn(1);
+        },
+        error: function(error) {
+          $('#loading').remove();
+          console.log(error);
+          alert("Error");
+        }
+      });
+    }
+
+    function police(d){
+      r = d.getAttribute("dep");
+      var station = Parse.Object.extend("station");//include class
+      var query = new Parse.Query(station);//對class做搜尋    
+      query.equalTo("unit", r);
+      var printList = doT.template($('#policeTemp').text());
+      query.limit(1);
+      query.find({
+        success: function(results) {
+          //alert(results.length);
+          //$("#textDiv").append(results.length + " results." + '<br>');
+            for (var i = 0; i < results.length; i++) { 
+              var object = results[i];
+              $("#depinfo").html("");
+              $("#depinfo").html(printList(object));
+              $('#map').tinyMap({
+                center: object.get('address'),
+                zoom: 17,
+                mapTypeControl: false, //地圖類型切換
+                streetViewControl: false, //街景控制器
+                zoomControl: false, //縮放控制器
+                scaleControl: false, //比例尺
+                markerCluster: true, //啟用marker分組
+                marker:[
+                  {addr: object.get('address'),
+                  text:object.get('address')}]
+              });
+            }
+          },
+          error: function(error) {
+            alert("Error");
+          }
+        });
+    }
+
+    function pageclick(d){
+      turn(parseInt(d.getAttribute("page")));
+    }
+
+    function turn(num){
+      currentpage = num;
+      var printList = doT.template($('#listTemp').text());
+      $("#table").html('<tr align="center" valign="middle"> <td><a href="#">拾獲日期</a></td> <td><a href="#">拾獲地點</a></td> <td><a href="#">物品描述</a></td> <td><a href="#">保管地點</a></td> </tr>');
+      for (var i=0+(currentpage-1)*50 ; i<50+(currentpage-1)*50 ; i++){
+        $("#table").append(printList(items[i]));
+      }
+    }
+
+    function trigger(d){
+      $('#sname').val(d.innerHTML);
+    }
+  </script>
+</head>
+<body>
+  <nav id="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container_12">
+      <div id="nav_item">
+        <span><a href="index.html">首頁</a></span>
+        <span id="present"><a href="normalSearch.html">一般搜尋</a> </span>
+        <span><a href="mapSearch.html">地圖搜尋</a> </span>
+        <span><a href="pick.html">撿到東西</a> </span>
+        <span><a href="staff.html">團隊成員</a> </span>
+      </div>
+      <div id="logo">
+          <img src="images/logo.png" height="60px">
+      </div>
+    </div>
+  </nav>
+ 
+  <article>
+    <div id="wrapper" style="min-height:500px">
+      <section class="container_12" style="padding-top:0px">
+        <div class="grid_4">
+          <div class="main">
+            <a href="#wheel1" class="wheel-button" style="text-decoration: none">
+             <i class="customicon-plus"></i>
+            </a>
+            <div class="pointer">手機</div>
+            <ul id="wheel1" class="wheel">
+              <li class="item"><a onclick="trigger(this)">iPhone</a></li>
+              <li class="item"><a onclick="trigger(this)">HTC</a></li>
+              <li class="item"><a onclick="trigger(this)">Samsung</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid_4">
+          <div class="main">
+            <a href="#wheel2" class="wheel-button" style="text-decoration: none">
+             <i class="customicon-plus"></i>
+            </a>
+            <div class="pointer">證件</div>
+            <ul id="wheel2" class="wheel">
+              <li class="item"><a onclick="trigger(this)">護照</a></li>
+              <li class="item"><a onclick="trigger(this)">身分證</a></li>
+              <li class="item"><a onclick="trigger(this)">學生證</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid_4">
+          <div class="main">
+            <a href="#wheel3" class="wheel-button" style="text-decoration: none">
+             <i class="customicon-plus"></i>
+            </a>
+            <div class="pointer">包包</div>
+            <ul id="wheel3" class="wheel">
+              <li class="item"><a onclick="trigger(this)">錢包</a></li>
+              <li class="item"><a onclick="trigger(this)">後背包</a></li>
+              <li class="item"><a onclick="trigger(this)">側背包</a></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      
+      <section class="container_12 pink search">
+        <div class="grid_4">
+          <label for="triggerWords">失物關鍵字:</label>
+          <input type="text" id="sname" class="searchInput" name="x" size="25" maxlength="120" />
+        </div>
+        <div class="grid_4">
+          <label for="lostTime">遺失時間 :</label>
+          <input type="date" id="sdate" class="searchInput" name="x" size="25" maxlength="120" />
+        </div>
+        <div class="grid_4">
+          <label for="lostPosition"> 遺失地點:</label>
+          <input type="text" id="sloc" class="searchInput" name="x" size="25" maxlength="120" />
+        </div>
+      </section>
+      
+      <section class="container_12">
+        <div class="gird_12" align="center">
+          <input type="submit" value="搜尋" type="button" id="button" onclick="search()">
+        </div>
+      </section>
+
+      <section class="container_12">
+        <table id="table" align="center" class="table" cellspacing="5" cellpadding="6">
+          <tr id="title_table" align="center" valign="middle" >
+            <td>日期</a></td>
+            <td>地點</a></td>
+            <td>物品描述</a></td>
+            <td>保管地點</a></td>
+          </tr>
+        </table>
+      </section>
+      
+      <section class="container_12">
+        <div class="grid_12" align="center">
+          <ul class="pagination" id="page">
+          </ul>
+        </div>
+      </section>
+   </div>
+  </article>
+  
+  
+  <footer>
+    <div class="container_12">
+        <p>National Chengchi University</p>
+        <p>Web Programming Project</p>
+      </div>
+    </div>    
+  </footer>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4>警局資料</h4>
+        </div>
+        <div id="depinfo">
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    $(".wheel-button").wheelmenu({
+      trigger: "hover",
+      //animation: "fly",
+      angle: [180, 450]
+    });
+  </script>
+</body>
+</html>
