@@ -101,7 +101,7 @@
 			  if (status == google.maps.places.PlacesServiceStatus.OK) {
 			  	var markerlist = [];
 			  	for (var i = 0; i < results.length; i++) {
-			  		markerlist.push({addr: [r.geometry.location.k,r.geometry.location.A],text: r.name});
+			  		markerlist.push({addr: [results[i].geometry.location.k,results[i].geometry.location.A],text: results[i].name});
 			    }
 			    $('#map').tinyMap('modify',{marker:markerlist});
 			  }
