@@ -77,7 +77,7 @@
       $('#table').append("<tr><td colspan='4'> <img id='loading' src='images/loading.gif'> </td></tr>");
       var r = $('#sdate').val();
       r = r.replace(/\-/g,"/");
-      var miss = Parse.Object.extend("miss");//include class
+      var miss = Parse.Object.extend("new");//include class
       var query = new Parse.Query(miss);//對class做搜尋
       //query.equalTo("time", r);
       var ans = 0;

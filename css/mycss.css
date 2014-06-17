@@ -7,6 +7,10 @@ a {
  text-decoration: none 
 } 
 
+td {
+  text-align: center;
+}
+
 nav {
   background-color:#FBB03B;
   padding: 5px 0px;

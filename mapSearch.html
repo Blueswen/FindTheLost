@@ -15,7 +15,7 @@
   <!-- Include Google Maps API (Google Maps API v3 已不需使用 API Key) -->
   <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
   <!-- Marker clusterer -->
-  <script src="js/markerclusterer.js"></script>
+  <script src="http://app.essoduke.org/tinyMap/markerclusterer.js"></script>
   <!-- tinyMap -->
   <script src="js/jquery.tinyMap.min.js"></script>
   <!-- Parse -->
@@ -76,7 +76,7 @@
       $('#table').append("<tr><td colspan='4'> <img id='loading' src='images/loading.gif'> </td></tr>");
       var r = $('#sdate').val();
       r = r.replace(/\-/g,"/");
-      var miss = Parse.Object.extend("miss");//include class
+      var miss = Parse.Object.extend("new");//include class
       var query = new Parse.Query(miss);//對class做搜尋
       //query.equalTo("time", r);
       var ans = 0;
@@ -174,7 +174,7 @@
             if($.inArray({addr: [r.geometry.location.k,r.geometry.location.A],text: r.name},markerlist)==-1)
               markerlist.push({addr: [r.geometry.location.k,r.geometry.location.A],text: r.name});
           });
-          $('#map').tinyMap('modify',{marker:markerlist});
+          $('#map').tinyMap('modify',{marker:markerlist,markerCluster: true});
           var printList = doT.template($('#listTemp').text());
           $("#table").html('<tr id="title_table" align="center" valign="middle" ><td style="width:100px">日期</a></td><td style="width:200px">地點</a></td><td>物品描述</a></td><td style="width:100px">保管地點</a></td></tr>');
           for(var i=0 ; i<items.length ; i++){
