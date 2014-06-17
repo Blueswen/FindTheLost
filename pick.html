@@ -3,6 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>失物招領</title>
+	<link rel="shortcut icon" href="images/icon.ico" />
 	<!-- Grid960 -->
   <link rel="stylesheet" type="text/css" href="css/960_12_col.css">
   <!-- jQuery -->
@@ -98,19 +99,11 @@
 
 			function callback(results, status) {
 			  if (status == google.maps.places.PlacesServiceStatus.OK) {
-			  	console.log(results);
+			  	var markerlist = [];
 			  	for (var i = 0; i < results.length; i++) {
-			  		/*
-			      $('#map').tinyMap('modify',{marker:[
-		         {addr: results[i].vicinity}
-		         ]
-		        });
-						*/
-						$('#map').tinyMap('modify',{marker:[
-		         {addr: [results[i].geometry.location.k,results[i].geometry.location.A]}
-		         ]
-		        });
+			  		markerlist.push({addr: [r.geometry.location.k,r.geometry.location.A],text: r.name});
 			    }
+			    $('#map').tinyMap('modify',{marker:markerlist});
 			  }
 			}
 		}

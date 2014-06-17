@@ -3,6 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>失物招領 - 地圖搜尋</title>
+  <link rel="shortcut icon" href="images/icon.ico" />
   <!-- Grid960 -->
   <link rel="stylesheet" type="text/css" href="css/960_12_col.css">
   <!-- jQuery -->
@@ -53,7 +54,7 @@
       </ul>
     </div>
     <div class="section_right">
-      <div id="map" style="height:400px;width:598px;"></div>
+      <div id="mapPolice" style="height:400px;width:598px;"></div>
     </div>
   </script>
   <script type="text/javascript">
@@ -61,6 +62,7 @@
     
     var items=[];
     var policelist=[];
+    var markerlist=[];
     var currentpage = 1;
     var totalpage = 1;
 
@@ -70,7 +72,7 @@
         return false;
       }
       items=[];
-      $("#table").html('<tr align="center" valign="middle"> <td>拾獲日期</td> <td>拾獲地點</td> <td>物品描述</td> <td>保管地點</td> </tr>');
+      $("#table").html('<tr id="title_table" align="center" valign="middle" ><td style="width:100px">日期</a></td><td style="width:200px">地點</a></td><td>物品描述</a></td><td style="width:100px">保管地點</a></td></tr>');
       $('#table').append("<tr><td colspan='4'> <img id='loading' src='images/loading.gif'> </td></tr>");
       var r = $('#sdate').val();
       r = r.replace(/\-/g,"/");
@@ -100,17 +102,7 @@
           }
 
           if(items.length==0){
-            $('#table').append("<tr><td colspan='4' style='font-size:2em;pading-top:20px'> 無相關遺失物 </td></tr>");
-          }
-          else{
-            /*
-            totalpage = Math.ceil(items.length/50);
-            $('#page').html("");
-            for (var i=1 ; i<=totalpage ; i++){
-              $('#page').append("<li><a page=" + i + " onclick='pageclick(this)'>" + i + "</a></li>");
-            }
-            turn(1);
-            */
+            $('#table').append("<tr><td colspan='4' style='font-size:2em;pading-top:20px'> 無此時間區段遺失物資料 </td></tr>");
           }
         },
         error: function(error) {
@@ -137,7 +129,7 @@
               var object = results[i];
               $("#depinfo").html("");
               $("#depinfo").html(printList(object));
-              $('#map').tinyMap({
+              $('#mapPolice').tinyMap({
                 center: object.get('address'),
                 zoom: 17,
                 mapTypeControl: false, //地圖類型切換
@@ -157,16 +149,7 @@
         });
     }
 
-    function turn(num){
-      currentpage = num;
-      var printList = doT.template($('#listTemp').text());
-      $("#table").html('<tr align="center" valign="middle"> <td>拾獲日期</td> <td>拾獲地點</td> <td>物品描述</td> <td>保管地點</td> </tr>');
-      for (var i=0+(currentpage-1)*50 ; i<50+(currentpage-1)*50 ; i++){
-        $("#table").append(printList(items[i]));
-      }
-    }
-
-    function mark(x,y,width){
+    function mark(x,y){
       var pyrmont = new google.maps.LatLng(x,y);;
       map = new google.maps.Map(document.getElementById('map1'), {
           mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -175,7 +158,7 @@
       });
       var request = {
         location: pyrmont,
-        radius: '3000',
+        radius: '300',
         types: ['police']
       };
 
@@ -184,26 +167,24 @@
       
       function callback(results, status) {
         if (status == google.maps.places.PlacesServiceStatus.OK) {
-          policelist = [];
-          policelist = results.map(function(r){
-            $('#map').tinyMap('modify',{marker:[
-             {addr: r.vicinity}
-             ]
-            });
-            return r.name;
+          $('#map').tinyMap('clear', 'marker');
+          results.forEach(function(r){
+            if($.inArray(r.name,policelist)==-1)
+              policelist.push(r.name);
+            if($.inArray({addr: [r.geometry.location.k,r.geometry.location.A],text: r.name},markerlist)==-1)
+              markerlist.push({addr: [r.geometry.location.k,r.geometry.location.A],text: r.name});
           });
+          $('#map').tinyMap('modify',{marker:markerlist});
+          var printList = doT.template($('#listTemp').text());
+          $("#table").html('<tr id="title_table" align="center" valign="middle" ><td style="width:100px">日期</a></td><td style="width:200px">地點</a></td><td>物品描述</a></td><td style="width:100px">保管地點</a></td></tr>');
+          for(var i=0 ; i<items.length ; i++){
+            polname = items[i].get('name');
+            if($.inArray(polname,policelist)!=-1){
+              $("#table").append(printList(items[i]));
+            }
+          }
         }
-      }
-
-      var printList = doT.template($('#listTemp').text());
-      console.log(items.length);
-      for(var i=0 ; i<items.length ; i++){
-        polname = items[i].get('name');
-        if($.inArray(items[i].get('name'),policelist)!=-1){
-          $("#table").append(printList(items[i]));
-          console.log('fuck');
-        }
-      }
+      }  
     }
   </script>
 </head>
@@ -225,8 +206,13 @@
  
   <article> 
     <div id="wrapper">
+      <section class="container_12">
+        <div class="grid_12" style="text-align:center">
+          <p>請先選擇遺失時間，利用搜尋列移動至可能遺失地，點選標記區域按鈕，點選地圖後將列出範圍內警局所保管遺失物資料。</p>
+        </div>
+      </section>
       <section id="searchBox" class="container_12 pink">
-         <div class="grid_3">
+        <div class="grid_3">
           <label for="lostTime">遺失時間 :</label>
           <input type="date" id="sdate" class="searchInput" name="x" size="25" maxlength="120" />
         </div>
@@ -241,7 +227,7 @@
         </div>
        
         <div class="grid_2">
-          <button type="button" id="build">標記區域</button>
+          <button type="button" id="build" style="width:100%">標記區域</button>
         </div>
       </section>
       <section class="container_12">   
@@ -249,12 +235,12 @@
         <div id="map1" style="display:none;"></div>
       </section>
       <section class="container_12">
-        <table id="table" align="center" class="table" cellspacing="5" cellpadding="6">
+        <table id="table" class="table" cellspacing="5" cellpadding="6">
           <tr id="title_table" align="center" valign="middle" >
-            <td>日期</td>
-            <td>地點</td>
-            <td>物品描述</td>
-            <td>保管地點</td>
+            <td style="width:100px">日期</a></td>
+            <td style="width:200px">地點</a></td>
+            <td>物品描述</a></td>
+            <td style="width:100px">保管地點</a></td>
           </tr>
         </table>
       </section>
@@ -284,7 +270,6 @@
   </div>
 
   <script type="text/javascript">
-    var len = 0.0005;
     var markflag = false;
     $('#map').tinyMap({
       center: "臺北市文山區指南路二段64號",
@@ -300,12 +285,12 @@
             $('#map').tinyMap('modify',
               {circle : [{
                 center: {x: e.latLng.lat(), y: e.latLng.lng()},
-                radius: 3000,
+                radius: 300,
                 color: '#000033',
                 fillcolor: ''
               }]
             });
-            mark(e.latLng.lat(),e.latLng.lng(),len);
+            mark(e.latLng.lat(),e.latLng.lng());
           }
         }
       }
@@ -324,6 +309,10 @@
         }
       });
       $("#sdate").change(function(){
+        $('#map').tinyMap('clear', 'marker,circle');
+        markerlist = [];
+        policelist = [];
+        markflag = false;
         search();
       });
     });

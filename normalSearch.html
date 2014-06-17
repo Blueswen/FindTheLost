@@ -3,6 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>失物招領 - 一般搜尋</title>
+  <link rel="shortcut icon" href="images/icon.ico" />
   <!-- Grid960 -->
   <link rel="stylesheet" type="text/css" href="css/960_12_col.css">
   <!-- jQuery -->
@@ -172,6 +173,10 @@
     function trigger(d){
       $('#sname').val(d.innerHTML);
     }
+
+    $(function(){
+      search();
+    });
   </script>
 </head>
 <body>
@@ -241,7 +246,7 @@
         </div>
         <div class="grid_4">
           <label for="lostTime">遺失時間 :</label>
-          <input type="date" id="sdate" class="searchInput" name="x" size="25" maxlength="120" />
+          <input type="date" id="sdate" class="searchInput" name="x" size="25" maxlength="120" value="2014-01-01" />
         </div>
         <div class="grid_4">
           <label for="lostPosition"> 遺失地點:</label>

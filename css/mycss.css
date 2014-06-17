@@ -3,6 +3,10 @@ body {
   background-color: #eee;
 }
 
+a {
+ text-decoration: none 
+} 
+
 nav {
   background-color:#FBB03B;
   padding: 5px 0px;
@@ -32,6 +36,7 @@ nav a {
 nav span {
   width: auto;
   padding: 0px 10px;
+  font-weight: 700;
 }
 
 
@@ -65,6 +70,7 @@ section {
 }
 
 footer {
+  font-weight: 700;
   background-color:#FBB03B;
   color: white;
   text-align: center;
@@ -162,16 +168,6 @@ button{
   float: right;
 }
 
-td{
-  text-align:center;
-}
-
-li{
-  list-style-type:none;
-}
-
-
-
 /* 未連結 */
 #nav_item  a:link{
   color: white;
@@ -201,12 +197,10 @@ li{
 #present a:link{
   color:#FBB03B; 
 }
-a { text-decoration: none } 
 
 #pagination{
   color: white;
   background-color: #FBB03B;
- 
 }
 
 .g{
