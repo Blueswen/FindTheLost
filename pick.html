@@ -100,8 +100,14 @@
 			  if (status == google.maps.places.PlacesServiceStatus.OK) {
 			  	console.log(results);
 			  	for (var i = 0; i < results.length; i++) {
+			  		/*
 			      $('#map').tinyMap('modify',{marker:[
 		         {addr: results[i].vicinity}
+		         ]
+		        });
+						*/
+						$('#map').tinyMap('modify',{marker:[
+		         {addr: [results.geometry.location.k,results.geometry.location.A]}
 		         ]
 		        });
 			    }
