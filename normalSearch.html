@@ -72,7 +72,8 @@
         return false;
       }
       items=[];
-      $('#page').append("<img id='loading' src='images/loading.gif'>");
+      $("#table").html('<tr id="title_table" align="center" valign="middle" ><td style="width:100px">日期</a></td><td style="width:200px">地點</a></td><td>物品描述</a></td><td style="width:100px">保管地點</a></td></tr>');
+      $('#table').append("<tr><td colspan='4'> <img id='loading' src='images/loading.gif'> </td></tr>");
       var r = $('#sdate').val();
       r = r.replace(/\-/g,"/");
       var miss = Parse.Object.extend("miss");//include class
@@ -99,13 +100,18 @@
               }
             }
           }
-          
-          totalpage = Math.ceil(items.length/50);
-          $('#page').html("");
-          for (var i=1 ; i<=totalpage ; i++){
-            $('#page').append("<li><a page=" + i + " onclick='pageclick(this)'>" + i + "</a></li>");
+
+          if(items.length==0){
+            $('#table').append("<tr><td colspan='4' style='font-size:2em;pading-top:20px'> 無相關遺失物 </td></tr>");
           }
-          turn(1);
+          else{
+            totalpage = Math.ceil(items.length/50);
+            $('#page').html("");
+            for (var i=1 ; i<=totalpage ; i++){
+              $('#page').append("<li><a page=" + i + " onclick='pageclick(this)'>" + i + "</a></li>");
+            }
+            turn(1);
+          }
         },
         error: function(error) {
           $('#loading').remove();
@@ -157,7 +163,7 @@
     function turn(num){
       currentpage = num;
       var printList = doT.template($('#listTemp').text());
-      $("#table").html('<tr align="center" valign="middle"> <td><a href="#">拾獲日期</a></td> <td><a href="#">拾獲地點</a></td> <td><a href="#">物品描述</a></td> <td><a href="#">保管地點</a></td> </tr>');
+      $("#table").html('<tr id="title_table" align="center" valign="middle" ><td style="width:100px">日期</a></td><td style="width:200px">地點</a></td><td>物品描述</a></td><td style="width:100px">保管地點</a></td></tr>');
       for (var i=0+(currentpage-1)*50 ; i<50+(currentpage-1)*50 ; i++){
         $("#table").append(printList(items[i]));
       }
@@ -185,7 +191,7 @@
   </nav>
  
   <article>
-    <div id="wrapper" style="min-height:500px">
+    <div id="wrapper" style="min-height:900px">
       <section class="container_12" style="padding-top:0px">
         <div class="grid_4">
           <div class="main">
@@ -250,12 +256,12 @@
       </section>
 
       <section class="container_12">
-        <table id="table" align="center" class="table" cellspacing="5" cellpadding="6">
+        <table id="table" class="table" cellspacing="5" cellpadding="6">
           <tr id="title_table" align="center" valign="middle" >
-            <td>日期</a></td>
-            <td>地點</a></td>
+            <td style="width:100px">日期</a></td>
+            <td style="width:200px">地點</a></td>
             <td>物品描述</a></td>
-            <td>保管地點</a></td>
+            <td style="width:100px">保管地點</a></td>
           </tr>
         </table>
       </section>

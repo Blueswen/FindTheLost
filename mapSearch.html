@@ -21,6 +21,9 @@
   <script src="https://www.parsecdn.com/js/parse-1.2.18.min.js"></script>
   <!-- doT.js -->
   <script type="text/javascript" src="js/doT.min.js"></script>
+  <!-- google jsapi -->
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=true_or_false"></script>
   <!-- Mycss.css -->
   <link rel="stylesheet" type="text/css" href="css/mycss.css">
   <script id="listTemp" type="text/x-dot-template">
@@ -57,6 +60,7 @@
     Parse.initialize("siqvdO6RZKE0kdv3YbIuNtbAbiorfT8vk3LCAM1N", "BgPVg2ZigIrxIJyBgx43E4fjUeSswZKm3si56WVS");
     
     var items=[];
+    var policelist=[];
     var currentpage = 1;
     var totalpage = 1;
 
@@ -66,7 +70,8 @@
         return false;
       }
       items=[];
-      $('#page').append("<img id='loading' src='images/loading.gif'>");
+      $("#table").html('<tr align="center" valign="middle"> <td>拾獲日期</td> <td>拾獲地點</td> <td>物品描述</td> <td>保管地點</td> </tr>');
+      $('#table').append("<tr><td colspan='4'> <img id='loading' src='images/loading.gif'> </td></tr>");
       var r = $('#sdate').val();
       r = r.replace(/\-/g,"/");
       var miss = Parse.Object.extend("miss");//include class
@@ -83,13 +88,30 @@
           for (var i = 0; i < results.length-2; i++) { 
             var object =results[i];
             var mtime =object.get('time');
-            if(mtime==undefined)
+            var mloc =object.get('location');
+            var minfo =object.get('info');
+            if(mtime==undefined||mloc==undefined||minfo==undefined)
               continue;
             if((parseInt((mtime.split("/"))[2],10))<=(parseInt((r.split("/"))[2],10)+7)){
-              items.push(object);
+              if(mloc.search($('#sloc').val())!=-1 && minfo.search($('#sname').val())!=-1){
+                items.push(object);
+              }
             }
           }
-          
+
+          if(items.length==0){
+            $('#table').append("<tr><td colspan='4' style='font-size:2em;pading-top:20px'> 無相關遺失物 </td></tr>");
+          }
+          else{
+            /*
+            totalpage = Math.ceil(items.length/50);
+            $('#page').html("");
+            for (var i=1 ; i<=totalpage ; i++){
+              $('#page').append("<li><a page=" + i + " onclick='pageclick(this)'>" + i + "</a></li>");
+            }
+            turn(1);
+            */
+          }
         },
         error: function(error) {
           $('#loading').remove();
@@ -98,6 +120,7 @@
         }
       });
     }
+
 
     function police(d){
       r = d.getAttribute("dep");
@@ -137,9 +160,49 @@
     function turn(num){
       currentpage = num;
       var printList = doT.template($('#listTemp').text());
-      $("#table").html('<tr align="center" valign="middle"> <td><a href="#">拾獲日期</a></td> <td><a href="#">拾獲地點</a></td> <td><a href="#">物品描述</a></td> <td><a href="#">保管地點</a></td> </tr>');
+      $("#table").html('<tr align="center" valign="middle"> <td>拾獲日期</td> <td>拾獲地點</td> <td>物品描述</td> <td>保管地點</td> </tr>');
       for (var i=0+(currentpage-1)*50 ; i<50+(currentpage-1)*50 ; i++){
         $("#table").append(printList(items[i]));
+      }
+    }
+
+    function mark(x,y,width){
+      var pyrmont = new google.maps.LatLng(x,y);;
+      map = new google.maps.Map(document.getElementById('map1'), {
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          center: pyrmont,
+          zoom: 15
+      });
+      var request = {
+        location: pyrmont,
+        radius: '3000',
+        types: ['police']
+      };
+
+      service = new google.maps.places.PlacesService(map);
+      service.search(request, callback);
+      
+      function callback(results, status) {
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+          policelist = [];
+          policelist = results.map(function(r){
+            $('#map').tinyMap('modify',{marker:[
+             {addr: r.vicinity}
+             ]
+            });
+            return r.name;
+          });
+        }
+      }
+
+      var printList = doT.template($('#listTemp').text());
+      console.log(items.length);
+      for(var i=0 ; i<items.length ; i++){
+        polname = items[i].get('name');
+        if($.inArray(items[i].get('name'),policelist)!=-1){
+          $("#table").append(printList(items[i]));
+          console.log('fuck');
+        }
       }
     }
   </script>
@@ -170,9 +233,9 @@
 
         <div class="grid_7">
           <div class="input-group">
-            <input type="text" class="form-control">
+            <input type="text" class="form-control" id="address">
             <span class="input-group-btn">
-              <button class="btn btn-default" type="button">Go!</button>
+              <button class="btn btn-default" type="button" id="go">Go!</button>
             </span>
           </div>
         </div>
@@ -183,14 +246,15 @@
       </section>
       <section class="container_12">   
         <div id="map" class="grid_12" style="height:400px"></div>
+        <div id="map1" style="display:none;"></div>
       </section>
       <section class="container_12">
         <table id="table" align="center" class="table" cellspacing="5" cellpadding="6">
           <tr id="title_table" align="center" valign="middle" >
-            <td>日期</a></td>
-            <td>地點</a></td>
-            <td>物品描述</a></td>
-            <td>保管地點</a></td>
+            <td>日期</td>
+            <td>地點</td>
+            <td>物品描述</td>
+            <td>保管地點</td>
           </tr>
         </table>
       </section>
@@ -234,50 +298,33 @@
         'click' : function (e) {
           if(markflag){
             $('#map').tinyMap('modify',
-              {polygon:{
-                coords: [
-                [e.latLng.lat()+len, e.latLng.lng()+len],
-                [e.latLng.lat()+len, e.latLng.lng()-len],
-                [e.latLng.lat()-len, e.latLng.lng()-len],
-                [e.latLng.lat()-len, e.latLng.lng()+len]
-                ],
+              {circle : [{
+                center: {x: e.latLng.lat(), y: e.latLng.lng()},
+                radius: 3000,
                 color: '#000033',
-                fillcolor: '',
-                width: 1} 
-              });
+                fillcolor: ''
+              }]
+            });
+            mark(e.latLng.lat(),e.latLng.lng(),len);
           }
-        },
-      }       
+        }
+      }
     });
     $(function(){                   
       $("#go").click(function(){
         $('#map').tinyMap('panto', $('#address').val());
         $('#map').tinyMap('modify', {zoom:16});
       });
-      $("#mark").click(function(){
-        $('#map').tinyMap('modify',{marker:[
-          {addr: "台灣指南路二段64號",
-          text: "Iphone手機1.00個",
-          label: "手機",
-          event: function(){
-           window.open("lostitem.html","_blank");
-         }},
-         {addr: "台北市指南路二段18號",
-         text: "新台幣若干元",
-         label: "現金"},
-         {addr: "台北市指南路二段12號",
-         text: "卡西歐手錶1.00只",
-         label: "手錶"},
-         {addr: "台北市指南路二段28號",
-         text: "餅乾1.00盒",
-         label: "其他"},
-         {addr: "台北市指南路二段32號",
-         text: "美金1500.00元",
-         label: "現金"}
-         ]});
-      });
       $("#build").click(function(){
-        markflag = !markflag;
+        if($('#sdate').val()==""){
+          alert("請選擇日期");
+        }
+        else{
+         markflag = !markflag;
+        }
+      });
+      $("#sdate").change(function(){
+        search();
       });
     });
   </script>
